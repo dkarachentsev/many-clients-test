@@ -13,4 +13,4 @@ else
     JAVA=${JAVA_HOME}/bin/java
 fi
 
-$JAVA -Xms10g -Xmx10g -cp target/apple-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server
+$JAVA -Xms10g -Xmx10g -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server

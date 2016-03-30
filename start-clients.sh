@@ -15,5 +15,5 @@ fi
 
 for ((i=1;i<=$1;i++))
 do
-    $JAVA -Xms4g -Xmx4g -cp target/apple-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client &
+    $JAVA -Xms4g -Xmx4g -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client &
 done
