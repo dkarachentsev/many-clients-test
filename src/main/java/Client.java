@@ -13,7 +13,7 @@ public class Client {
             try (Ignite ignite = Ignition.start("ignite.xml")) {
                 IgniteCache<Key, Value> cache = ignite.cache("test-cache");
 
-                int idx = rnd.nextInt(100_000);
+                int idx = rnd.nextInt(20_000_000);
 
                 if (rnd.nextDouble() > 0.5)
                     cache.put(new Key(idx), new Value(idx));
