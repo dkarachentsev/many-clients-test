@@ -13,4 +13,8 @@ else
     JAVA=${JAVA_HOME}/bin/java
 fi
 
-$JAVA -Xms10g -Xmx10g -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server
+export IGNITE_WORK_DIR=`pwd`/work
+
+rm -rf $IGNITE_WORK_DIR
+
+$JAVA -Xms4g -Xmx4g -Denv=$1 -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server
