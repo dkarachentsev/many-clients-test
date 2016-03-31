@@ -6,6 +6,12 @@
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd">
     <bean id="ignite.cfg" class="org.apache.ignite.configuration.IgniteConfiguration" abstract="true">
+        <property name="connectorConfiguration">
+            <bean class="org.apache.ignite.configuration.ConnectorConfiguration">
+                <property name="port" value="13000"/>
+            </bean>
+        </property>
+
         <property name="gridLogger">
             <bean class="org.apache.ignite.logger.log4j.Log4JLogger">
                 <constructor-arg value="ignite-log4j.xml"/>
