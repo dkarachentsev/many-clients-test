@@ -19,6 +19,6 @@ rm -rf $IGNITE_WORK_DIR
 
 for ((i=1;i<=$2;i++))
 do
-    $JAVA -Xms1g -Xmx1g -Denv=$1 -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR \
+    $JAVA -Xms1g -Xmx1g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR \
         -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client > /dev/null &
 done
