@@ -16,5 +16,5 @@ fi
 export IGNITE_WORK_DIR=`pwd`/work
 
 $JAVA -Xms4g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 \
-    -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_QUIET=false -DIGNITE_UPDATE_NOTIFIER=false -DIGNITE_AFFINITY_HISTORY_SIZE=1000 \
+    -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_QUIET=false -DIGNITE_UPDATE_NOTIFIER=false \
     -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server
