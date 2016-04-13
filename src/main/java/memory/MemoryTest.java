@@ -1,9 +1,5 @@
 package memory;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -39,11 +35,13 @@ public class MemoryTest {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length >= 2 && "--generate".equals(args[0])) {
-            generate(Integer.parseInt(args[1]));
+//        if (args.length >= 2 && "--generate".equals(args[0])) {
+//            generate(Integer.parseInt(args[1]));
+//
+//            return;
+//        }
 
-            return;
-        }
+        int size = Integer.parseInt(args[0]);
 
         String env = System.getProperty("env");
 
@@ -65,59 +63,59 @@ public class MemoryTest {
 
             IgniteCache<String, CmplTradeHist> cache = ignite.getOrCreateCache(ccfg);
 
-            load(ignite);
+            load(ignite, size);
 
             System.out.println(cache.size());
             System.out.println(cache.metrics().getOffHeapAllocatedSize());
         }
     }
+//
+//    private static void generate(final int size) throws IOException, InterruptedException {
+//        System.out.println("Generating data...");
+//
+//        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
+//
+//        final AtomicInteger cnt = new AtomicInteger();
+//
+//        for (int i = 0; i < THREADS; i++) {
+//            final String file = "wf_test_" + i + ".csv";
+//
+//            exec.submit(new Callable<Void>() {
+//                @Override public Void call() throws Exception {
+//                    try (FileWriter writer = new FileWriter(file)) {
+//                        while (true) {
+//                            int idx = cnt.incrementAndGet();
+//
+//                            StringBuilder builder = new StringBuilder();
+//
+//                            for (Field field : FIELDS)
+//                                builder.append(field.getName()).append('-').append(idx).append(',');
+//
+//                            String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
+//
+//                            writer.write(row);
+//
+//                            if (idx > 0 && idx % 10000 == 0)
+//                                System.out.println(idx);
+//
+//                            if (idx >= size)
+//                                break;
+//                        }
+//
+//                        writer.flush();
+//                    }
+//
+//                    return null;
+//                }
+//            });
+//        }
+//
+//        exec.shutdownNow();
+//
+//        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+//    }
 
-    private static void generate(final int size) throws IOException, InterruptedException {
-        System.out.println("Generating data...");
-
-        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
-
-        final AtomicInteger cnt = new AtomicInteger();
-
-        for (int i = 0; i < THREADS; i++) {
-            final String file = "wf_test_" + i + ".csv";
-
-            exec.submit(new Callable<Void>() {
-                @Override public Void call() throws Exception {
-                    try (FileWriter writer = new FileWriter(file)) {
-                        while (true) {
-                            int idx = cnt.incrementAndGet();
-
-                            StringBuilder builder = new StringBuilder();
-
-                            for (Field field : FIELDS)
-                                builder.append(field.getName()).append('-').append(idx).append(',');
-
-                            String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
-
-                            writer.write(row);
-
-                            if (idx > 0 && idx % 10000 == 0)
-                                System.out.println(idx);
-
-                            if (idx >= size)
-                                break;
-                        }
-
-                        writer.flush();
-                    }
-
-                    return null;
-                }
-            });
-        }
-
-        exec.shutdownNow();
-
-        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-    }
-
-    private static void load(final Ignite ignite) throws IOException, IllegalAccessException, InterruptedException {
+    private static void load(final Ignite ignite, final int size) throws IllegalAccessException, InterruptedException {
         System.out.println("Loading data...");
 
         ExecutorService exec = Executors.newFixedThreadPool(THREADS);
@@ -125,29 +123,24 @@ public class MemoryTest {
         final AtomicInteger cnt = new AtomicInteger();
 
         for (int i = 0; i < THREADS; i++) {
-            final String file = "wf_test_" + i + ".csv";
-
             exec.submit(new Callable<Void>() {
                 @Override public Void call() throws Exception {
                     try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
-                        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                            String line;
+                        while (true) {
+                            int idx = cnt.incrementAndGet();
 
-                            while ((line = reader.readLine()) != null) {
-                                String[] parts = line.split(",");
+                            CmplTradeHist val = new CmplTradeHist();
 
-                                CmplTradeHist val = new CmplTradeHist();
+                            for (Field field : FIELDS)
+                                field.set(val, field.getName() + '-' + idx);
 
-                                for (int i = 0; i < parts.length; i++)
-                                    FIELDS[i].set(val, parts[i]);
+                            streamer.addData(val.getCacheKey(), val);
 
-                                streamer.addData(val.getCacheKey(), val);
+                            if (idx > 0 && idx % 10000 == 0)
+                                System.out.println(idx);
 
-                                int cnt0 = cnt.incrementAndGet();
-
-                                if (cnt0 % 10000 == 0)
-                                    System.out.println(cnt0);
-                            }
+                            if (idx >= size)
+                                break;
                         }
                     }
 
