@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteDataStreamer;
@@ -17,7 +22,7 @@ import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
 import org.apache.ignite.configuration.CacheConfiguration;
 
 public class MemoryTest {
-    private static final String FILE = "wf_test.csv";
+    private static final int THREADS = Runtime.getRuntime().availableProcessors();
 
     private static final String CACHE = "CmplTradeHist";
 
@@ -67,51 +72,90 @@ public class MemoryTest {
         }
     }
 
-    private static void generate(int size) throws IOException {
+    private static void generate(final int size) throws IOException, InterruptedException {
         System.out.println("Generating data...");
 
-        try (FileWriter writer = new FileWriter(FILE)) {
-            for (int i = 0; i < size; i++) {
-                StringBuilder builder = new StringBuilder();
+        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
 
-                for (Field field : FIELDS)
-                    builder.append(field.getName()).append('-').append(i).append(',');
+        final AtomicInteger cnt = new AtomicInteger();
 
-                String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
+        for (int i = 0; i < THREADS; i++) {
+            final String file = "wf_test_" + i + ".csv";
 
-                writer.write(row);
+            exec.submit(new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    try (FileWriter writer = new FileWriter(file)) {
+                        while (true) {
+                            int idx = cnt.incrementAndGet();
 
-                if (i > 0 && i % 10000 == 0)
-                    System.out.println(i);
-            }
+                            StringBuilder builder = new StringBuilder();
 
-            writer.flush();
+                            for (Field field : FIELDS)
+                                builder.append(field.getName()).append('-').append(idx).append(',');
+
+                            String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
+
+                            writer.write(row);
+
+                            if (idx > 0 && idx % 10000 == 0)
+                                System.out.println(idx);
+
+                            if (idx >= size)
+                                break;
+                        }
+
+                        writer.flush();
+                    }
+
+                    return null;
+                }
+            });
         }
+
+        exec.shutdownNow();
+
+        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
 
-    private static void load(Ignite ignite) throws IOException, IllegalAccessException {
+    private static void load(final Ignite ignite) throws IOException, IllegalAccessException, InterruptedException {
         System.out.println("Loading data...");
 
-        try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(FILE))) {
-                String line;
+        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
 
-                int cnt = 0;
+        for (int i = 0; i < THREADS; i++) {
+            final String file = "wf_test_" + i + ".csv";
 
-                while ((line = reader.readLine()) != null) {
-                    String[] parts = line.split(",");
+            exec.submit(new Callable<Void>() {
+                @Override public Void call() throws Exception {
+                    try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
+                        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                            String line;
 
-                    CmplTradeHist val = new CmplTradeHist();
+                            int cnt = 0;
 
-                    for (int i = 0; i < parts.length; i++)
-                        FIELDS[i].set(val, parts[i]);
+                            while ((line = reader.readLine()) != null) {
+                                String[] parts = line.split(",");
 
-                    streamer.addData(val.getCacheKey(), val);
+                                CmplTradeHist val = new CmplTradeHist();
 
-                    if (++cnt % 10000 == 0)
-                        System.out.println(cnt);
+                                for (int i = 0; i < parts.length; i++)
+                                    FIELDS[i].set(val, parts[i]);
+
+                                streamer.addData(val.getCacheKey(), val);
+
+                                if (++cnt % 10000 == 0)
+                                    System.out.println(cnt);
+                            }
+                        }
+                    }
+
+                    return null;
                 }
-            }
+            });
         }
+
+        exec.shutdownNow();
+
+        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
 }
