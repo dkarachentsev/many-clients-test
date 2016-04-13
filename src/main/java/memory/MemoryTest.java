@@ -122,6 +122,8 @@ public class MemoryTest {
 
         ExecutorService exec = Executors.newFixedThreadPool(THREADS);
 
+        final AtomicInteger cnt = new AtomicInteger();
+
         for (int i = 0; i < THREADS; i++) {
             final String file = "wf_test_" + i + ".csv";
 
@@ -130,8 +132,6 @@ public class MemoryTest {
                     try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
                         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
                             String line;
-
-                            int cnt = 0;
 
                             while ((line = reader.readLine()) != null) {
                                 String[] parts = line.split(",");
@@ -143,8 +143,10 @@ public class MemoryTest {
 
                                 streamer.addData(val.getCacheKey(), val);
 
-                                if (++cnt % 10000 == 0)
-                                    System.out.println(cnt);
+                                int cnt0 = cnt.incrementAndGet();
+
+                                if (cnt0 % 10000 == 0)
+                                    System.out.println(cnt0);
                             }
                         }
                     }
