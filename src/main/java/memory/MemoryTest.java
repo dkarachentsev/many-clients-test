@@ -117,15 +117,16 @@ public class MemoryTest {
     private static void load(final Ignite ignite, final int size) throws IllegalAccessException, InterruptedException {
         System.out.println("Loading data...");
 
-        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
+        try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
+            ExecutorService exec = Executors.newFixedThreadPool(THREADS);
 
-        final AtomicInteger cnt = new AtomicInteger();
+            final AtomicInteger cnt = new AtomicInteger();
 
-        for (int i = 0; i < THREADS; i++) {
-            exec.submit(new Callable<Void>() {
-                @Override public Void call() throws Exception {
-                    try {
-                        try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
+            for (int i = 0; i < THREADS; i++) {
+                exec.submit(new Callable<Void>() {
+                    @Override
+                    public Void call() throws Exception {
+                        try {
                             while (true) {
                                 int idx = cnt.getAndIncrement();
 
@@ -143,18 +144,18 @@ public class MemoryTest {
                                     System.out.println("Loaded: " + idx);
                             }
                         }
-                    }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
-                    return null;
-                }
-            });
+                        return null;
+                    }
+                });
+            }
+
+            exec.shutdown();
+
+            exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
         }
-
-        exec.shutdown();
-
-        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
 }
