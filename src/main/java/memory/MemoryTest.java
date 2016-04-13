@@ -18,7 +18,7 @@ import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
 import org.apache.ignite.configuration.CacheConfiguration;
 
 public class MemoryTest {
-    private static final int THREADS = Runtime.getRuntime().availableProcessors();
+    private static final int THREADS = Runtime.getRuntime().availableProcessors() * 2;
 
     private static final String CACHE = "CmplTradeHist";
 
@@ -65,8 +65,7 @@ public class MemoryTest {
 
             load(ignite, size);
 
-            System.out.println(cache.size());
-            System.out.println(cache.metrics().getOffHeapAllocatedSize());
+            System.out.println("Cache size: " + cache.size());
         }
     }
 //
@@ -110,7 +109,7 @@ public class MemoryTest {
 //            });
 //        }
 //
-//        exec.shutdownNow();
+//        exec.shutdown();
 //
 //        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
 //    }
@@ -125,23 +124,28 @@ public class MemoryTest {
         for (int i = 0; i < THREADS; i++) {
             exec.submit(new Callable<Void>() {
                 @Override public Void call() throws Exception {
-                    try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
-                        while (true) {
-                            int idx = cnt.incrementAndGet();
+                    try {
+                        try (IgniteDataStreamer<String, CmplTradeHist> streamer = ignite.dataStreamer(CACHE)) {
+                            while (true) {
+                                int idx = cnt.getAndIncrement();
 
-                            CmplTradeHist val = new CmplTradeHist();
+                                if (idx >= size)
+                                    break;
 
-                            for (Field field : FIELDS)
-                                field.set(val, field.getName() + '-' + idx);
+                                CmplTradeHist val = new CmplTradeHist();
 
-                            streamer.addData(val.getCacheKey(), val);
+                                for (Field field : FIELDS)
+                                    field.set(val, field.getName() + '-' + idx);
 
-                            if (idx > 0 && idx % 10000 == 0)
-                                System.out.println(idx);
+                                streamer.addData(val.getCacheKey(), val);
 
-                            if (idx >= size)
-                                break;
+                                if (idx > 0 && idx % 10000 == 0)
+                                    System.out.println("Loaded: " + idx);
+                            }
                         }
+                    }
+                    catch (Exception e) {
+                        e.printStackTrace();
                     }
 
                     return null;
@@ -149,7 +153,7 @@ public class MemoryTest {
             });
         }
 
-        exec.shutdownNow();
+        exec.shutdown();
 
         exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
     }
