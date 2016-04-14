@@ -1,5 +1,7 @@
 package memory;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,11 +37,11 @@ public class MemoryTest {
     }
 
     public static void main(String[] args) throws Exception {
-//        if (args.length >= 2 && "--generate".equals(args[0])) {
-//            generate(Integer.parseInt(args[1]));
-//
-//            return;
-//        }
+        if (2 > 1) {
+            generate(Integer.parseInt(args[0]));
+
+            return;
+        }
 
         int size = Integer.parseInt(args[0]);
 
@@ -68,51 +70,31 @@ public class MemoryTest {
             System.out.println("Cache size: " + cache.size());
         }
     }
-//
-//    private static void generate(final int size) throws IOException, InterruptedException {
-//        System.out.println("Generating data...");
-//
-//        ExecutorService exec = Executors.newFixedThreadPool(THREADS);
-//
-//        final AtomicInteger cnt = new AtomicInteger();
-//
-//        for (int i = 0; i < THREADS; i++) {
-//            final String file = "wf_test_" + i + ".csv";
-//
-//            exec.submit(new Callable<Void>() {
-//                @Override public Void call() throws Exception {
-//                    try (FileWriter writer = new FileWriter(file)) {
-//                        while (true) {
-//                            int idx = cnt.incrementAndGet();
-//
-//                            StringBuilder builder = new StringBuilder();
-//
-//                            for (Field field : FIELDS)
-//                                builder.append(field.getName()).append('-').append(idx).append(',');
-//
-//                            String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
-//
-//                            writer.write(row);
-//
-//                            if (idx > 0 && idx % 10000 == 0)
-//                                System.out.println(idx);
-//
-//                            if (idx >= size)
-//                                break;
-//                        }
-//
-//                        writer.flush();
-//                    }
-//
-//                    return null;
-//                }
-//            });
-//        }
-//
-//        exec.shutdown();
-//
-//        exec.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-//    }
+
+    private static void generate(final int size) throws IOException, InterruptedException {
+        System.out.println("Generating data...");
+
+        try (FileWriter writer = new FileWriter("wf_test.csv")) {
+            for (int i = 0; i < size; i++) {
+                StringBuilder builder = new StringBuilder();
+
+                for (Field field : FIELDS)
+                    builder.append("abcdef").append(',');
+
+                String row = builder.deleteCharAt(builder.length() - 1).append('\n').toString();
+
+                writer.write(row);
+
+                if (i > 0 && i % 10000 == 0)
+                    System.out.println(i);
+
+                if (i >= size)
+                    break;
+            }
+
+            writer.flush();
+        }
+    }
 
     private static void load(final Ignite ignite, final int size) throws IllegalAccessException, InterruptedException {
         System.out.println("Loading data...");
@@ -136,9 +118,9 @@ public class MemoryTest {
                                 CmplTradeHist val = new CmplTradeHist();
 
                                 for (Field field : FIELDS)
-                                    field.set(val, field.getName() + '-' + idx);
+                                    field.set(val, "abcdef");
 
-                                streamer.addData(val.getCacheKey(), val);
+                                streamer.addData(val.getCacheKey() + idx, val);
 
                                 if (idx > 0 && idx % 10000 == 0)
                                     System.out.println("Loaded: " + idx);
