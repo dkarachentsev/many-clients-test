@@ -37,11 +37,11 @@ public class MemoryTest {
     }
 
     public static void main(String[] args) throws Exception {
-        if (2 > 1) {
-            generate(Integer.parseInt(args[0]));
-
-            return;
-        }
+//        if (2 > 1) {
+//            generate(Integer.parseInt(args[0]));
+//
+//            return;
+//        }
 
         int size = Integer.parseInt(args[0]);
 
