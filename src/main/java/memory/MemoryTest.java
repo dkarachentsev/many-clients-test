@@ -56,7 +56,7 @@ public class MemoryTest {
             CacheConfiguration<String, CmplTradeHist> ccfg = new CacheConfiguration<>(CACHE);
 
             ccfg.setMemoryMode(CacheMemoryMode.OFFHEAP_TIERED);
-            ccfg.setOffHeapMaxMemory(400 * 1024L * 1024L * 1024L);
+//            ccfg.setOffHeapMaxMemory(400 * 1024L * 1024L * 1024L);
             ccfg.setAffinity(new RendezvousAffinityFunction(false, 256));
             ccfg.setCacheMode(CacheMode.PARTITIONED);
             ccfg.setBackups(1);
