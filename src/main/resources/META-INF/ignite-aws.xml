@@ -11,7 +11,7 @@
         <property name="location" value="classpath:META-INF/s3.properties"/>
     </bean>
 
-    <bean parent="ignite.cfg">
+    <bean parent="ignite.cfg.base" id="ignite.cfg">
         <property name="discoverySpi">
             <bean class="org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi">
                 <property name="ipFinder">
