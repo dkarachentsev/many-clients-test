@@ -13,9 +13,9 @@ public class Client {
         if (env == null || env.isEmpty())
             throw new IllegalArgumentException();
 
-        ExecutorService exec = Executors.newFixedThreadPool(2);
+        ExecutorService exec = Executors.newFixedThreadPool(100);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 100; i++) {
             final String name = "ignite-" + i;
 
             exec.submit(new Runnable() {
