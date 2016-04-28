@@ -1,5 +1,5 @@
 #!/bin/bash
-
+now0=`date +'%d%m-%H%M%S'`
 if [ "$JAVA_HOME" = "" ]; then
     JAVA=`type -p java`
     RETCODE=$?
@@ -12,6 +12,8 @@ if [ "$JAVA_HOME" = "" ]; then
 else
     JAVA=${JAVA_HOME}/bin/java
 fi
+
+dstat > ./work/dstat-$now0.log 2>&1 &
 
 export IGNITE_WORK_DIR=`pwd`/work
 
