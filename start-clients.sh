@@ -1,5 +1,5 @@
 #!/bin/bash
-
+now0=`date +'%d%m-%H%M%S'`
 if [ "$JAVA_HOME" = "" ]; then
     JAVA=`type -p java`
     RETCODE=$?
@@ -15,11 +15,14 @@ fi
 
 export IGNITE_WORK_DIR=`pwd`/work
 
+dstat > ./work/dstat-$now0.log 2>&1 &
+
 rm -rf $IGNITE_WORK_DIR
 
 for ((i=1;i<=$2;i++))
 do
-    $JAVA -Xms10g -Xmx20g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 \
+    $JAVA -Xms10g -Xmx20g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 -Xloggc:./gc${now0}.log -XX:+PrintGCDetails \
+        -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
         -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false \
         -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client > /dev/null &
 done
