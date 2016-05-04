@@ -22,7 +22,7 @@ rm -rf $IGNITE_WORK_DIR
 for ((i=1;i<=$2;i++))
 do
     $JAVA -Xms2g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 \
-        -Xloggc:./gc${now0}.log -XX:+PrintGCDetails \
+        -Xloggc:./gc${i}.log -XX:+PrintGCDetails \
         -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
         -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false \
         -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server > /dev/null &
