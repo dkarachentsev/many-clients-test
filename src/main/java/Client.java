@@ -7,15 +7,17 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 public class Client {
+    private static final int CLIENTS = 1;
+
     public static void main(String[] args) {
         final String env = System.getProperty("env");
 
         if (env == null || env.isEmpty())
             throw new IllegalArgumentException();
 
-        ExecutorService exec = Executors.newFixedThreadPool(100);
+        ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
             exec.submit(new Runnable() {
