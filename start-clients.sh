@@ -24,5 +24,5 @@ do
     $JAVA -Xms10g -Xmx20g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 -Xloggc:./gc${i}.log -XX:+PrintGCDetails \
         -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
         -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false \
-        -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client > /dev/null &
+        -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client > ./work/out.log 2>&1 &
 done
