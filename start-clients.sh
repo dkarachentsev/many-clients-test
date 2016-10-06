@@ -14,12 +14,11 @@ else
 fi
 
 export IGNITE_WORK_DIR=`pwd`/work
-export IGNITE_HOME=`pwd`
 
 mkdir -p $IGNITE_HOME/config
 mkdir -p $IGNITE_WORK_DIR
 
-dstat "–t --top-mem –m –s –g –d --fs --top-io 3" > ./work/dstat-$now0.log 2>&1 &
+dstat –t --top-mem –m –s –g –d --fs --top-io 3 > ./work/dstat-$now0.log 2>&1 &
 
 #rm -rf $IGNITE_WORK_DIR
 
@@ -27,6 +26,6 @@ for ((i=1;i<=$2;i++))
 do
     $JAVA -Xms10g -Xmx20g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 -Xloggc:./gc${i}.log -XX:+PrintGCDetails \
         -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
-        -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false \
+        -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_QUIET=false -DIGNITE_UPDATE_NOTIFIER=false \
         -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Client > ./work/out.log 2>&1 &
 done
