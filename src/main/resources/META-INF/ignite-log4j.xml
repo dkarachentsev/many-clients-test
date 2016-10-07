@@ -87,9 +87,11 @@
     <!--
         Avoid warnings about failed bind attempt when multiple nodes running on the same host.
     -->
+<!--
     <category name="org.apache.ignite.spi.discovery">
         <level value="DEBUG"/>
     </category>
+-->
 
     <!-- Default settings. -->
     <root>
