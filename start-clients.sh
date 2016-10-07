@@ -18,7 +18,7 @@ export IGNITE_WORK_DIR=`pwd`/work
 mkdir -p $IGNITE_HOME/config
 mkdir -p $IGNITE_WORK_DIR
 
-dstat –t --top-mem –m –s –g –d --fs --top-io 3 > ./work/dstat-$now0.log 2>&1 &
+dstat -t --top-mem -m -s -g -d --fs --top-io 3 > ./work/dstat-$now0.log 2>&1 &
 
 #rm -rf $IGNITE_WORK_DIR
 
