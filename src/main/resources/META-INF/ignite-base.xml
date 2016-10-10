@@ -23,6 +23,7 @@
                 <property name="name" value="test-cache"/>
                 <property name="backups" value="1"/>
                 <property name="memoryMode" value="OFFHEAP_TIERED"/>
+                <property name="offHeapMaxMemory" value="4"/>
             </bean>
         </property>
 
