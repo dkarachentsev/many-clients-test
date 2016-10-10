@@ -22,6 +22,7 @@
             <bean class="org.apache.ignite.configuration.CacheConfiguration">
                 <property name="name" value="test-cache"/>
                 <property name="backups" value="1"/>
+                <property name="memoryMode" value="OFFHEAP_TIERED"/>
             </bean>
         </property>
 
