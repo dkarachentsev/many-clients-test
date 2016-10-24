@@ -62,7 +62,7 @@ public class Client {
 
     private static void setClientCfg(IgniteConfiguration cfg) {
         cfg.setSystemThreadPoolSize(2);
-        cfg.setPublicThreadPoolSize(1);
+        cfg.setPublicThreadPoolSize(2);
         cfg.setConnectorConfiguration(null);
     }
 }
