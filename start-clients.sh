@@ -22,6 +22,8 @@ dstat -t --top-mem -m -s -g -d --fs --top-io 3 > ./work/dstat-$now0.log 2>&1 &
 
 #rm -rf $IGNITE_WORK_DIR
 
+ulimit -n 4096
+
 for ((i=1;i<=$2;i++))
 do
     $JAVA -Xms10g -Xmx20g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 -Xloggc:./gc${i}.log -XX:+PrintGCDetails \
