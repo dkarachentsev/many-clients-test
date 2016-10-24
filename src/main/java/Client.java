@@ -18,7 +18,7 @@ public class Client {
 
         ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
 
-        final CyclicBarrier barrier = new CyclicBarrier(CLIENTS);
+//        final CyclicBarrier barrier = new CyclicBarrier(CLIENTS);
 
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
@@ -51,11 +51,12 @@ public class Client {
                                 }
                             }
                             finally {
-                                barrier.await();
+//                                barrier.await();
                             }
                         }
                     }
                     catch (Throwable t) {
+                        System.err.println("== Fatal error: " + t.getMessage());
                         t.printStackTrace();
                     }
                 }
