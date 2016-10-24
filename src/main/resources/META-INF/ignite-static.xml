@@ -14,9 +14,6 @@
                     <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
                         <property name="addresses">
                             <list>
-                                <value>172.31.9.209:47500..47509</value>
-                                <value>172.31.9.218:47500..47509</value>
-                                <value>172.31.9.212:47500..47509</value>
                             </list>
                         </property>
                     </bean>
