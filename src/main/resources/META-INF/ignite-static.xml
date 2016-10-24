@@ -18,7 +18,7 @@
                         </property>
                     </bean>
                 </property>
-                <property name="clientNioThreads" value="1"/>
+                <!--<property name="clientNioThreads" value="1"/>-->
             </bean>
         </property>
     </bean>
