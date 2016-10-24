@@ -1,4 +1,5 @@
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.ignite.Ignite;
@@ -7,7 +8,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 public class Client {
-    private static final int CLIENTS = 100;
+    private static final int CLIENTS = 200;
 
     public static void main(String[] args) {
         final String env = System.getProperty("env");
@@ -16,6 +17,8 @@ public class Client {
             throw new IllegalArgumentException();
 
         ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
+
+        final CyclicBarrier barrier = new CyclicBarrier(CLIENTS);
 
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
@@ -31,6 +34,8 @@ public class Client {
                             cfg.setGridName(name);
                             cfg.setClientMode(true);
 
+                            setClientCfg(cfg);
+
                             try (Ignite ignite = Ignition.start(cfg)) {
                                 IgniteCache<Key, Value> cache = ignite.cache("test-cache");
 
@@ -45,6 +50,9 @@ public class Client {
                                         throw new AssertionError();
                                 }
                             }
+                            finally {
+                                barrier.await();
+                            }
                         }
                     }
                     catch (Throwable t) {
@@ -53,5 +61,11 @@ public class Client {
                 }
             });
         }
+    }
+
+    private static void setClientCfg(IgniteConfiguration cfg) {
+        cfg.setSystemThreadPoolSize(2);
+        cfg.setPublicThreadPoolSize(1);
+        cfg.setRebalanceThreadPoolSize(2);
     }
 }
