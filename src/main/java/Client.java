@@ -1,5 +1,4 @@
 import java.util.Random;
-import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import org.apache.ignite.Ignite;
@@ -18,8 +17,6 @@ public class Client {
 
         ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
 
-//        final CyclicBarrier barrier = new CyclicBarrier(CLIENTS);
-
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
@@ -28,17 +25,17 @@ public class Client {
                     try {
                         Random rnd = new Random();
 
-                        while (true) {
-                            IgniteConfiguration cfg = Ignition.loadSpringBean("ignite-" + env + ".xml", "ignite.cfg");
+                        IgniteConfiguration cfg = Ignition.loadSpringBean("ignite-" + env + ".xml", "ignite.cfg");
 
-                            cfg.setGridName(name);
-                            cfg.setClientMode(true);
+                        cfg.setGridName(name);
+                        cfg.setClientMode(true);
 
-                            setClientCfg(cfg);
+                        setClientCfg(cfg);
 
-                            try (Ignite ignite = Ignition.start(cfg)) {
-                                IgniteCache<Key, Value> cache = ignite.cache("test-cache");
+                        try (Ignite ignite = Ignition.start(cfg)) {
+                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
 
+                            while (true) {
                                 int idx = rnd.nextInt(5_000_000);
 
                                 if (rnd.nextDouble() > 0.5)
@@ -49,9 +46,8 @@ public class Client {
                                     if (val != null && val.index() != idx)
                                         throw new AssertionError();
                                 }
-                            }
-                            finally {
-//                                barrier.await();
+
+                                Thread.sleep(1000);
                             }
                         }
                     }
