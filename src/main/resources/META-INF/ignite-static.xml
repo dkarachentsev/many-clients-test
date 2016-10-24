@@ -18,6 +18,7 @@
                         </property>
                     </bean>
                 </property>
+                <property name="clientNioThreads" value="2"/>
             </bean>
         </property>
     </bean>
