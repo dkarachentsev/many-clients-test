@@ -27,7 +27,7 @@ for ((i=1;i<=$2;i++))
 do
     $JAVA -Xms2g -Xmx4g -XX:+HeapDumpOnOutOfMemoryError -Denv=$1 \
         -XX:+UnlockCommercialFeatures -XX:+FlightRecorder \
-        -XX:FlightRecorderOptions=defaultrecording=true,settings=default,settings=mem \
+        -XX:FlightRecorderOptions=defaultrecording=true,settings=default,settings=memory \
         -XX:StartFlightRecording=duration=2min,delay=210s,filename=~/auto_server.jfr \
         -Xloggc:./gc${i}.log -XX:+PrintGCDetails \
         -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
