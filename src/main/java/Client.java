@@ -60,12 +60,12 @@ public class Client {
                 }
             });
 
-            try {
-                fut.get();
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+//            try {
+//                fut.get();
+//            }
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
     }
 
