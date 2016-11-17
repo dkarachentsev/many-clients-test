@@ -1,6 +1,8 @@
 import java.util.Random;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
@@ -20,7 +22,7 @@ public class Client {
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
-            exec.submit(new Runnable() {
+            final Future<?> fut = exec.submit(new Runnable() {
                 @Override public void run() {
                     try {
                         Random rnd = new Random();
@@ -57,6 +59,13 @@ public class Client {
                     }
                 }
             });
+
+            try {
+                fut.get();
+            }
+            catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
