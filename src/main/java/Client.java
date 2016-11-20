@@ -9,7 +9,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 public class Client {
-    private static final int CLIENTS = 100;
+    private static final int CLIENTS = 125;
 
     public static void main(String[] args) {
         final String env = System.getProperty("env");
@@ -22,7 +22,7 @@ public class Client {
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
-            final Future<?> fut = exec.submit(new Runnable() {
+            exec.submit(new Runnable() {
                 @Override public void run() {
                     try {
                         Random rnd = new Random();
@@ -59,13 +59,6 @@ public class Client {
                     }
                 }
             });
-
-//            try {
-//                fut.get();
-//            }
-//            catch (Exception e) {
-//                e.printStackTrace();
-//            }
         }
     }
 
