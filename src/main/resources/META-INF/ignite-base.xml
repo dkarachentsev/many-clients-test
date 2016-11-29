@@ -33,7 +33,7 @@
             </bean>
         </property>
 
-        <property name="failureDetectionTimeout" value="60000"/>
+        <property name="failureDetectionTimeout" value="30000"/>
 
         <property name="communicationSpi">
             <bean class="org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi">
