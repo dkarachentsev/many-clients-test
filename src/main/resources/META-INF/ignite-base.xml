@@ -18,7 +18,7 @@
             </bean>
         </property>
 
-        <property name="cacheConfiguration">
+        <!--<property name="cacheConfiguration">
             <bean class="org.apache.ignite.configuration.CacheConfiguration">
                 <property name="name" value="test-cache"/>
                 <property name="backups" value="1"/>
@@ -31,7 +31,10 @@
                     </bean>
                 </property>
             </bean>
-        </property>
+        </property>-->
+        <property name="systemThreadPoolSize" value="2"/>
+        <property name="publicThreadPoolSize" value="1"/>
+        <property name="marshallerCacheThreadPoolSize" value="1"/>
 
         <property name="failureDetectionTimeout" value="30000"/>
 
