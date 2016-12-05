@@ -9,7 +9,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 public class Client {
-    private static final int CLIENTS = 100;
+    private static final int CLIENTS = 300;
 
     public static void main(String[] args) {
         final String env = System.getProperty("env");
@@ -17,22 +17,22 @@ public class Client {
         if (env == null || env.isEmpty())
             throw new IllegalArgumentException();
 
-//        ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
+        ExecutorService exec = Executors.newFixedThreadPool(100);
 
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
-            IgniteConfiguration cfg = Ignition.loadSpringBean("ignite-" + env + ".xml", "ignite.cfg");
+//            IgniteConfiguration cfg = Ignition.loadSpringBean("ignite-" + env + ".xml", "ignite.cfg");
+//
+//            cfg.setGridName(name);
+//            cfg.setClientMode(true);
+//
+//            setClientCfg(cfg);
+//
+//            Ignition.start(cfg);
 
-            cfg.setGridName(name);
-            cfg.setClientMode(true);
 
-            setClientCfg(cfg);
-
-            Ignition.start(cfg);
-
-
-            /*exec.submit(new Runnable() {
+            exec.submit(new Runnable() {
                 @Override public void run() {
                     try {
                         Random rnd = new Random();
@@ -45,31 +45,33 @@ public class Client {
                         setClientCfg(cfg);
 
 
-                        try (Ignite ignite = Ignition.start(cfg)) {
-                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
+                        Ignite ignite = Ignition.start(cfg);
 
-                            while (true) {
-                                int idx = rnd.nextInt(5_000_000);
-
-                                if (rnd.nextDouble() > 0.5)
-                                    cache.put(new Key(idx), new Value(idx));
-                                else {
-                                    Value val = cache.get(new Key(idx));
-
-                                    if (val != null && val.index() != idx)
-                                        throw new AssertionError();
-                                }
-
-                                Thread.sleep(1000);
-                            }
-                        }
+//                        try (Ignite ignite = Ignition.start(cfg)) {
+//                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
+//
+//                            while (true) {
+//                                int idx = rnd.nextInt(5_000_000);
+//
+//                                if (rnd.nextDouble() > 0.5)
+//                                    cache.put(new Key(idx), new Value(idx));
+//                                else {
+//                                    Value val = cache.get(new Key(idx));
+//
+//                                    if (val != null && val.index() != idx)
+//                                        throw new AssertionError();
+//                                }
+//
+//                                Thread.sleep(1000);
+//                            }
+//                        }
                     }
                     catch (Throwable t) {
                         System.err.println("== Fatal error: " + t.getMessage());
                         t.printStackTrace();
                     }
                 }
-            });*/
+            });
         }
     }
 
