@@ -35,20 +35,20 @@ public class Client {
                         setClientCfg(cfg);
 
                         try (Ignite ignite = Ignition.start(cfg)) {
-                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
+//                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
 
                             while (true) {
-                                int idx = rnd.nextInt(5_000_000);
-
-                                if (rnd.nextDouble() > 0.5)
-                                    cache.put(new Key(idx), new Value(idx));
-                                else {
-                                    Value val = cache.get(new Key(idx));
-
-                                    if (val != null && val.index() != idx)
-                                        throw new AssertionError();
-                                }
-
+//                                int idx = rnd.nextInt(5_000_000);
+//
+//                                if (rnd.nextDouble() > 0.5)
+//                                    cache.put(new Key(idx), new Value(idx));
+//                                else {
+//                                    Value val = cache.get(new Key(idx));
+//
+//                                    if (val != null && val.index() != idx)
+//                                        throw new AssertionError();
+//                                }
+//
                                 Thread.sleep(1000);
                             }
                         }
