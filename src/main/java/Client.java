@@ -17,12 +17,22 @@ public class Client {
         if (env == null || env.isEmpty())
             throw new IllegalArgumentException();
 
-        ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
+//        ExecutorService exec = Executors.newFixedThreadPool(CLIENTS);
 
         for (int i = 0; i < CLIENTS; i++) {
             final String name = "ignite-" + i;
 
-            exec.submit(new Runnable() {
+            IgniteConfiguration cfg = Ignition.loadSpringBean("ignite-" + env + ".xml", "ignite.cfg");
+
+            cfg.setGridName(name);
+            cfg.setClientMode(true);
+
+            setClientCfg(cfg);
+
+            Ignition.start(cfg);
+
+
+            /*exec.submit(new Runnable() {
                 @Override public void run() {
                     try {
                         Random rnd = new Random();
@@ -34,21 +44,22 @@ public class Client {
 
                         setClientCfg(cfg);
 
+
                         try (Ignite ignite = Ignition.start(cfg)) {
-//                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
+                            IgniteCache<Key, Value> cache = ignite.cache("test-cache");
 
                             while (true) {
-//                                int idx = rnd.nextInt(5_000_000);
-//
-//                                if (rnd.nextDouble() > 0.5)
-//                                    cache.put(new Key(idx), new Value(idx));
-//                                else {
-//                                    Value val = cache.get(new Key(idx));
-//
-//                                    if (val != null && val.index() != idx)
-//                                        throw new AssertionError();
-//                                }
-//
+                                int idx = rnd.nextInt(5_000_000);
+
+                                if (rnd.nextDouble() > 0.5)
+                                    cache.put(new Key(idx), new Value(idx));
+                                else {
+                                    Value val = cache.get(new Key(idx));
+
+                                    if (val != null && val.index() != idx)
+                                        throw new AssertionError();
+                                }
+
                                 Thread.sleep(1000);
                             }
                         }
@@ -58,13 +69,13 @@ public class Client {
                         t.printStackTrace();
                     }
                 }
-            });
+            });*/
         }
     }
 
     private static void setClientCfg(IgniteConfiguration cfg) {
         cfg.setSystemThreadPoolSize(2);
-        cfg.setPublicThreadPoolSize(2);
+        cfg.setPublicThreadPoolSize(1);
         cfg.setConnectorConfiguration(null);
     }
 }
