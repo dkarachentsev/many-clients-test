@@ -14,7 +14,7 @@
                     <bean class="org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder">
                         <property name="addresses">
                             <list>
-                                <value>172.25.1.47:45700</value>
+                                <value>172.25.1.47:47500</value>
                             </list>
                         </property>
                     </bean>
