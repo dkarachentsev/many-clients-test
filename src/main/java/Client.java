@@ -9,7 +9,7 @@ import org.apache.ignite.Ignition;
 import org.apache.ignite.configuration.IgniteConfiguration;
 
 public class Client {
-    private static final int CLIENTS = 300;
+    private static final int CLIENTS = 100;
 
     public static void main(String[] args) {
         final String env = System.getProperty("env");
