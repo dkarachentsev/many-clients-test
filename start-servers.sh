@@ -29,6 +29,6 @@ do
         -XX:+UnlockCommercialFeatures -XX:+FlightRecorder \
         -Xloggc:./gc${i}.log -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:+PrintGCApplicationStoppedTime \
         -verbose:gc -XX:+UseParNewGC -XX:+UseConcMarkSweepGC \
-        -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false -DIGNITE_NO_SELECTOR_OPTS=true \
+        -DIGNITE_WORK_DIR=$IGNITE_WORK_DIR -DIGNITE_UPDATE_NOTIFIER=false -DIGNITE_NO_SELECTOR_OPTS=false \
         -cp target/many-clients-test-1.0-SNAPSHOT-jar-with-dependencies.jar Server > /dev/null &
 done
